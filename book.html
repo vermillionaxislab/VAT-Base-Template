@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>Book a Session · Coaching Lab</title>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#020202"/>
+<meta name="description" content="Book your coaching session. Training, Nutrition, Contest Prep, and Posing."/>
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --bg:#020202;--bg2:#050505;--card:#0a0a0c;--cardH:#111114;
+  --border:rgba(212,168,48,.28);--borderH:rgba(212,168,48,.35);--borderS:rgba(212,168,48,.15);
+  --acc:#D4A830;--accD:#A07818;--accDeep:#886018;--accVib:#ECC850;--accBright:#ECC850;
+  --accS:rgba(200,160,40,0.06);--accB:rgba(212,168,48,.45);--accM:rgba(200,160,40,0.30);
+  --accGlow:rgba(200,160,40,0.25);
+  --ice:#f0e8d0;--wh:#f0ece4;--ow:#c8c0b0;--mu:#908878;--dm:#605848;--dmL:#3a3428;
+  --glass:rgba(200,160,40,0.02);--glassB:rgba(200,160,40,0.04);
+  --warn:#e8b878;--danger:#d87878;--success:#78c878;
+  --display:'Cinzel',serif;--body:'Rajdhani',sans-serif;--mono:'IBM Plex Mono',monospace;
+  --goldGrad:linear-gradient(135deg,#8B6914,#C49628,#E8C050,#C49628,#8B6914);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%;overflow-x:hidden}
+body{min-height:100vh;overflow-x:hidden;background:var(--bg);color:var(--wh);font-family:var(--body);-webkit-font-smoothing:antialiased;touch-action:manipulation}
+input,select{font-family:var(--body);color:var(--wh);background:var(--glassB);border:1.5px solid var(--borderH);border-radius:10px;padding:13px 16px;font-size:14px;outline:none;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;transition:border-color .2s,box-shadow .2s;min-height:46px}
+input:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--accGlow)}
+input::placeholder{color:var(--dm);opacity:.6;font-style:italic;font-size:13px}
+select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23605848' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+select option{background:var(--card);color:var(--wh)}
+button{font-family:var(--body);cursor:pointer;border:none;outline:none;transition:all .18s ease}
+.btn{background:var(--goldGrad);background-size:200% 100%;color:var(--bg);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;padding:16px 20px;border-radius:12px;width:100%;box-shadow:0 4px 24px var(--accM);text-transform:uppercase;animation:shimmer 3s ease-in-out infinite;min-height:50px}
+.btn:hover{box-shadow:0 6px 32px var(--accB);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.4;pointer-events:none;animation:none}
+.btn2{background:var(--accS);color:var(--acc);border:1.5px solid var(--borderH);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;padding:10px 16px;border-radius:10px;text-transform:uppercase;transition:all .18s}
+.btn2:hover{background:var(--accGlow);border-color:var(--acc);color:var(--accBright)}
+.cd{background:linear-gradient(160deg,rgba(12,12,12,.99),rgba(6,6,6,.99));border:1.5px solid var(--borderS);border-radius:14px;padding:16px;margin-bottom:10px;transition:border-color .25s,box-shadow .25s;box-shadow:0 2px 12px rgba(0,0,0,.3),inset 0 1px 0 var(--glass)}
+.lb{font-size:10px;font-weight:700;color:var(--mu);font-family:var(--mono);letter-spacing:.1em;display:block;margin-bottom:8px;text-transform:uppercase}
+.sl{font-size:10px;font-weight:700;color:var(--acc);letter-spacing:.18em;font-family:var(--mono);margin-bottom:12px;text-transform:uppercase;line-height:1.4;text-shadow:0 0 20px var(--accGlow)}
+.gw{height:1px;background:linear-gradient(90deg,transparent,var(--accDeep),var(--acc),var(--accDeep),transparent);margin:28px 0}
+
+/* App container */
+#app{max-width:520px;margin:0 auto;min-height:100vh;position:relative;z-index:1;padding:0 16px}
+.bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 120% 60% at 50% -15%,var(--accGlow) 0%,transparent 45%),var(--bg)}
+
+/* Header */
+.portal-hdr{text-align:center;padding:40px 0 10px}
+.logo-mark{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#080808,#0e0e10);border:1.5px solid var(--borderH);display:inline-flex;align-items:center;justify-content:center;font-family:var(--display);font-size:32px;font-weight:900;animation:breathe 4s ease-in-out infinite;box-shadow:0 0 16px var(--accS);margin-bottom:16px}
+.logo-mark span{background:var(--goldGrad);background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:goldShimmer 4s ease-in-out infinite;filter:drop-shadow(0 0 20px var(--accM))}
+.portal-title{font-family:var(--display);font-size:22px;font-weight:700;color:var(--ice);letter-spacing:.04em;margin-bottom:4px}
+.portal-sub{font-size:9px;color:var(--dm);font-family:var(--mono);letter-spacing:.18em;text-transform:uppercase}
+
+/* Steps indicator */
+.steps{display:flex;align-items:center;justify-content:center;gap:6px;margin:28px 0 24px}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--borderS);transition:all .3s}
+.step-dot.active{background:var(--acc);box-shadow:0 0 12px var(--accGlow);width:24px;border-radius:4px}
+.step-dot.done{background:var(--accD)}
+
+/* Sections */
+.section{display:none;animation:slideUp .35s ease}
+.section.active{display:block}
+
+/* Phone input styling */
+.phone-wrap{position:relative;margin-bottom:20px}
+.phone-prefix{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:14px;color:var(--mu);font-weight:600;pointer-events:none}
+.phone-input{padding-left:44px;font-family:var(--mono);font-size:16px;letter-spacing:.06em;font-weight:500}
+
+/* Calendar */
+.cal-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.cal-nav-btn{width:36px;height:36px;border-radius:10px;background:var(--accS);border:1.5px solid var(--borderH);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700}
+.cal-month{font-family:var(--display);font-size:16px;color:var(--ice);letter-spacing:.04em}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:20px}
+.cal-hdr{font-size:9px;font-family:var(--mono);color:var(--dm);text-align:center;padding:6px 0;font-weight:700;letter-spacing:.08em}
+.cal-day{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .2s;position:relative;color:var(--ow)}
+.cal-day:hover{border-color:var(--borderH);background:var(--glassB)}
+.cal-day.today{color:var(--accBright);font-weight:700}
+.cal-day.today::after{content:'';position:absolute;bottom:4px;width:4px;height:4px;border-radius:50%;background:var(--acc)}
+.cal-day.selected{background:var(--accGlow);border-color:var(--accB);color:var(--accBright);box-shadow:0 0 12px var(--accS)}
+.cal-day.disabled{color:var(--dmL);cursor:default;pointer-events:none}
+.cal-day.has-slots::before{content:'';position:absolute;top:4px;right:4px;width:5px;height:5px;border-radius:50%;background:var(--success);box-shadow:0 0 6px rgba(120,200,120,.4)}
+.cal-day.no-slots{color:var(--dmL);opacity:.5}
+
+/* Time slots */
+.slots-wrap{margin-top:16px}
+.slot-group-title{font-size:9px;font-family:var(--mono);color:var(--dm);letter-spacing:.14em;text-transform:uppercase;margin:14px 0 8px;display:flex;align-items:center;gap:8px}
+.slot-group-title::after{content:'';flex:1;height:1px;background:var(--borderS)}
+.time-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.time-slot{padding:12px 8px;border-radius:10px;text-align:center;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ow);background:var(--glassB);border:1.5px solid var(--borderS);cursor:pointer;transition:all .2s}
+.time-slot:hover{border-color:var(--borderH);color:var(--wh);background:var(--accS)}
+.time-slot.selected{background:var(--accGlow);border-color:var(--accB);color:var(--accBright);box-shadow:0 0 12px var(--accS)}
+.time-slot.booked{opacity:.3;pointer-events:none;text-decoration:line-through}
+
+/* Session type chips */
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.type-chip{padding:18px 14px;border-radius:12px;text-align:center;border:1.5px solid var(--borderS);background:var(--glassB);cursor:pointer;transition:all .2s}
+.type-chip:hover{border-color:var(--borderH);background:var(--accS)}
+.type-chip.selected{border-color:var(--accB);background:var(--accGlow);box-shadow:0 0 16px var(--accS)}
+.type-chip .type-icon{font-size:24px;margin-bottom:6px}
+.type-chip .type-name{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--ow);text-transform:uppercase}
+.type-chip.selected .type-name{color:var(--accBright)}
+
+/* Confirm card */
+.confirm-card{background:linear-gradient(160deg,rgba(14,14,16,.99),rgba(6,6,8,.99));border:1.5px solid var(--borderH);border-radius:16px;padding:24px 20px;margin-bottom:20px;position:relative;overflow:hidden}
+.confirm-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--acc),transparent);opacity:.6}
+.confirm-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--borderS)}
+.confirm-row:last-child{border-bottom:none}
+.confirm-label{font-size:11px;color:var(--dm);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.confirm-value{font-size:14px;font-weight:600;color:var(--ice);font-family:var(--body)}
+
+/* Success */
+.success-wrap{text-align:center;padding:40px 0}
+.success-check{width:80px;height:80px;border-radius:50%;background:rgba(120,200,120,.08);border:2px solid rgba(120,200,120,.3);display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;animation:breatheGreen 3s ease-in-out infinite}
+.success-title{font-family:var(--display);font-size:22px;color:var(--ice);margin-bottom:8px}
+.success-sub{font-size:13px;color:var(--mu);line-height:1.6;margin-bottom:24px}
+
+/* Toast */
+.toast{position:fixed;top:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(12,12,18,.99),rgba(8,8,14,.99));color:var(--accBright);border:1px solid var(--accB);font-family:var(--mono);font-size:11px;font-weight:700;padding:11px 28px;border-radius:10px;z-index:1000;animation:toastIn .3s ease;box-shadow:0 8px 32px rgba(0,0,0,.5);letter-spacing:.08em;pointer-events:none;white-space:nowrap}
+
+/* Loading */
+.loading-dots{display:inline-flex;gap:4px;align-items:center}
+.loading-dots span{width:6px;height:6px;border-radius:50%;background:var(--acc);animation:dotPulse 1.2s ease-in-out infinite}
+.loading-dots span:nth-child(2){animation-delay:.15s}
+.loading-dots span:nth-child(3){animation-delay:.3s}
+
+/* Powered by footer */
+.portal-footer{text-align:center;padding:30px 0 40px;font-size:9px;color:var(--dmL);font-family:var(--mono);letter-spacing:.1em}
+.portal-footer a{color:var(--dm);text-decoration:none}
+
+/* Error state */
+.setup-msg{text-align:center;padding:60px 20px}
+.setup-msg .sl{font-size:11px;margin-bottom:16px}
+
+/* Animations */
+@keyframes shimmer{0%{background-position:100% 50%}50%{background-position:0% 50%}100%{background-position:100% 50%}}
+@keyframes goldShimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+@keyframes breathe{0%,100%{box-shadow:0 4px 30px rgba(0,0,0,.5),0 0 30px var(--accGlow)}50%{box-shadow:0 4px 30px rgba(0,0,0,.5),0 0 50px var(--accM)}}
+@keyframes breatheGreen{0%,100%{box-shadow:0 0 20px rgba(120,200,120,.1)}50%{box-shadow:0 0 40px rgba(120,200,120,.2)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes dotPulse{0%,80%,100%{transform:scale(.4);opacity:.3}40%{transform:scale(1);opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:rgba(255,255,255,.02)}
+::-webkit-scrollbar-thumb{background:var(--borderH);border-radius:2px}
+
+/* Mobile */
+@media(max-width:480px){
+  #app{padding:0 12px}
+  .portal-hdr{padding:28px 0 6px}
+  .portal-title{font-size:20px}
+  .logo-mark{width:48px;height:48px;font-size:28px;border-radius:12px}
+  .time-slots{grid-template-columns:repeat(3,1fr);gap:5px}
+  .type-grid{gap:6px}
+  .type-chip{padding:14px 10px}
+  .btn{padding:14px 16px;min-height:46px;font-size:10px}
+  .cal-day{font-size:12px}
+}
+@media(min-width:768px){
+  .time-slots{grid-template-columns:repeat(4,1fr)}
+  .type-grid{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div id="app">
+
+  <!-- HEADER -->
+  <div class="portal-hdr">
+    <div class="logo-mark"><span>C</span></div>
+    <div class="portal-title">Coaching Lab</div>
+    <div class="portal-sub">BOOK A SESSION</div>
+  </div>
+
+  <!-- STEP INDICATOR -->
+  <div class="steps" id="stepDots"></div>
+
+  <!-- STEP 0: SETUP ERROR (shown if no Supabase config) -->
+  <div class="section" id="sec-setup">
+    <div class="setup-msg">
+      <div class="sl">Booking Unavailable</div>
+      <div style="color:var(--mu);font-size:13px;line-height:1.6;margin-bottom:20px">
+        Online booking is currently being set up.<br>Please contact your coach directly to schedule your session.
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1: PHONE NUMBER -->
+  <div class="section" id="sec-phone">
+    <div class="sl" style="text-align:center">Book Your Session</div>
+    <div class="cd" style="padding:20px">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:13px;color:var(--mu);line-height:1.6">Enter your phone number to get started.<br>
+        <span style="font-size:11px;color:var(--dm)">New or returning — just your number.</span></div>
+      </div>
+      <div class="phone-wrap">
+        <span class="phone-prefix">+1</span>
+        <input type="tel" id="phoneInput" class="phone-input" placeholder="(555) 123-4567" maxlength="14" inputmode="tel" autocomplete="tel">
+      </div>
+      <div style="margin-bottom:16px">
+        <span class="lb">YOUR NAME</span>
+        <input type="text" id="nameInput" placeholder="First and last name" autocomplete="name">
+      </div>
+      <button class="btn" id="phoneBtn" onclick="submitPhone()">CONTINUE</button>
+    </div>
+    <div style="text-align:center;margin-top:14px;font-size:10px;color:var(--dmL);font-family:var(--mono);letter-spacing:.06em">
+      Your info is only used for scheduling
+    </div>
+  </div>
+
+  <!-- STEP 2: CALENDAR + TIME -->
+  <div class="section" id="sec-calendar">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <button class="btn2" onclick="goStep(1)" style="padding:6px 12px;font-size:9px">&lsaquo; BACK</button>
+      <div class="sl" style="margin:0">Pick a Date &amp; Time</div>
+      <div style="width:60px"></div>
+    </div>
+
+    <!-- Calendar -->
+    <div class="cd" style="padding:16px" id="calendarCard">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="calNav(-1)">&lsaquo;</button>
+        <div class="cal-month" id="calMonth"></div>
+        <button class="cal-nav-btn" onclick="calNav(1)">&rsaquo;</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+
+    <!-- Time slots -->
+    <div id="slotsContainer" style="display:none">
+      <div class="cd" style="padding:16px">
+        <div class="sl" id="slotsDate" style="margin-bottom:12px"></div>
+        <div id="slotsGrid"></div>
+        <div id="noSlots" style="display:none;text-align:center;padding:16px;color:var(--dm);font-size:12px">
+          No available times on this date
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" id="calNextBtn" onclick="goStep(3)" disabled style="margin-top:14px">SELECT A TIME TO CONTINUE</button>
+  </div>
+
+  <!-- STEP 3: SESSION TYPE -->
+  <div class="section" id="sec-type">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <button class="btn2" onclick="goStep(2)" style="padding:6px 12px;font-size:9px">&lsaquo; BACK</button>
+      <div class="sl" style="margin:0">Session Type</div>
+      <div style="width:60px"></div>
+    </div>
+
+    <div class="type-grid" id="typeGrid"></div>
+
+    <div class="cd" style="padding:14px;display:none" id="notesWrap">
+      <span class="lb">NOTES FOR MIKE (optional)</span>
+      <input type="text" id="bookingNotes" placeholder="Goals, questions, anything...">
+    </div>
+
+    <button class="btn" id="typeNextBtn" onclick="goStep(4)" disabled style="margin-top:10px">CONTINUE</button>
+  </div>
+
+  <!-- STEP 4: CONFIRM -->
+  <div class="section" id="sec-confirm">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <button class="btn2" onclick="goStep(3)" style="padding:6px 12px;font-size:9px">&lsaquo; BACK</button>
+      <div class="sl" style="margin:0">Confirm Booking</div>
+      <div style="width:60px"></div>
+    </div>
+
+    <div class="confirm-card" id="confirmCard"></div>
+
+    <button class="btn" id="bookBtn" onclick="confirmBooking()">BOOK SESSION</button>
+    <div style="text-align:center;margin-top:12px;font-size:10px;color:var(--dm);font-family:var(--mono)">
+      You'll receive an SMS confirmation
+    </div>
+  </div>
+
+  <!-- STEP 5: SUCCESS -->
+  <div class="section" id="sec-success">
+    <div class="success-wrap">
+      <div class="success-check">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <div class="success-title">You're Booked</div>
+      <div class="success-sub" id="successMsg"></div>
+      <div class="gw"></div>
+      <button class="btn2" onclick="bookAnother()" style="padding:12px 28px;display:inline-flex;align-items:center;gap:6px">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        BOOK ANOTHER SESSION
+      </button>
+    </div>
+  </div>
+
+  <div class="portal-footer">
+    <div style="margin-bottom:6px">COACHING LAB</div>
+  </div>
+</div>
+
+<script>
+/* ── CONFIG ── */
+var STEPS=["phone","calendar","type","confirm","success"];
+var SESSION_TYPES=[
+  {id:"training",name:"Training",icon:"\uD83C\uDFCB\uFE0F"},
+  {id:"nutrition",name:"Nutrition",icon:"\uD83E\uDD57"},
+  {id:"posing",name:"Posing",icon:"\uD83C\uDFC6"},
+  {id:"prep",name:"Contest Prep",icon:"\uD83D\uDCAA"}
+];
+var DN=["S","M","T","W","T","F","S"];
+var MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+var MONTHS_SHORT=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+/* ── STATE ── */
+var _step=1;
+var _phone="";
+var _name="";
+var _calMonth=new Date().getMonth();
+var _calYear=new Date().getFullYear();
+var _selectedDate=null;
+var _selectedTime=null;
+var _selectedType=null;
+var _notes="";
+var _bookedSlots=[];
+var _availability={};
+var _sb=null;
+var _configReady=false;
+
+/* ── SUPABASE ── */
+function getSupabase(){
+  if(_sb)return _sb;
+  /* Read config from URL params or localStorage fallback */
+  var params=new URLSearchParams(window.location.search);
+  var url=params.get("sb_url")||localStorage.getItem("bm_sb_url")||"";
+  var key=params.get("sb_key")||localStorage.getItem("bm_sb_key")||"";
+  if(!url||!key)return null;
+  /* Cache for future visits */
+  localStorage.setItem("bm_sb_url",url);
+  localStorage.setItem("bm_sb_key",key);
+  try{_sb=supabase.createClient(url,key);return _sb;}catch(e){return null;}
+}
+
+/* ── INIT ── */
+function init(){
+  var sb=getSupabase();
+  if(!sb){
+    showSection("setup");
+    return;
+  }
+  _configReady=true;
+  loadAvailability();
+  loadBookedSlots();
+  goStep(1);
+}
+
+/* Load coach availability settings from Supabase */
+function loadAvailability(){
+  var sb=getSupabase();if(!sb)return;
+  sb.from("app_settings").select("value").eq("key","coach_availability").single().then(function(res){
+    if(res.data&&res.data.value){
+      _availability=res.data.value;
+    }else{
+      /* Default availability: Mon-Sat 6am-8pm, 1hr slots */
+      _availability={
+        days:{0:false,1:true,2:true,3:true,4:true,5:true,6:true},
+        startHour:6,endHour:20,
+        slotMinutes:60,
+        blockedDates:[],
+        maxAdvanceDays:30
+      };
+    }
+  });
+}
+
+/* Load existing bookings to show which slots are taken */
+function loadBookedSlots(){
+  var sb=getSupabase();if(!sb)return;
+  var today=new Date().toISOString().split("T")[0];
+  sb.from("schedule").select("data").then(function(res){
+    if(res.data){
+      _bookedSlots=res.data.map(function(r){return r.data;}).filter(function(s){
+        return s.date>=today&&s.status!=="cancelled";
+      });
+    }
+  });
+}
+
+/* ── NAVIGATION ── */
+function goStep(n){
+  if(!_configReady&&n!==0){init();return;}
+  _step=n;
+  STEPS.forEach(function(s,i){
+    var sec=document.getElementById("sec-"+s);
+    if(sec){
+      sec.classList.remove("active");
+      if(i+1===n)sec.classList.add("active");
+    }
+  });
+  renderStepDots();
+  if(n===2)renderCalendar();
+  if(n===3)renderTypes();
+  if(n===4)renderConfirm();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function showSection(name){
+  document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});
+  var sec=document.getElementById("sec-"+name);
+  if(sec)sec.classList.add("active");
+}
+
+function renderStepDots(){
+  var html="";
+  for(var i=1;i<=STEPS.length;i++){
+    var cls="step-dot";
+    if(i===_step)cls+=" active";
+    else if(i<_step)cls+=" done";
+    html+='<div class="'+cls+'"></div>';
+  }
+  document.getElementById("stepDots").innerHTML=html;
+}
+
+/* ── PHONE INPUT ── */
+document.addEventListener("DOMContentLoaded",function(){
+  var inp=document.getElementById("phoneInput");
+  if(inp){
+    inp.addEventListener("input",function(e){
+      var v=e.target.value.replace(/\D/g,"");
+      if(v.length>10)v=v.substring(0,10);
+      if(v.length>=7)e.target.value="("+v.substring(0,3)+") "+v.substring(3,6)+"-"+v.substring(6);
+      else if(v.length>=4)e.target.value="("+v.substring(0,3)+") "+v.substring(3);
+      else if(v.length>0)e.target.value="("+v;
+      else e.target.value="";
+    });
+    inp.addEventListener("keydown",function(e){
+      if(e.key==="Enter")submitPhone();
+    });
+  }
+  var nameInp=document.getElementById("nameInput");
+  if(nameInp){
+    nameInp.addEventListener("keydown",function(e){
+      if(e.key==="Enter")submitPhone();
+    });
+  }
+  init();
+});
+
+function submitPhone(){
+  var raw=document.getElementById("phoneInput").value.replace(/\D/g,"");
+  var name=(document.getElementById("nameInput").value||"").trim();
+  if(raw.length<10){toast("Please enter a valid phone number");shake("phoneInput");return;}
+  if(!name){toast("Please enter your name");shake("nameInput");return;}
+  _phone="+1"+raw;
+  _name=name;
+  goStep(2);
+}
+
+/* ── CALENDAR ── */
+function calNav(dir){
+  _calMonth+=dir;
+  if(_calMonth>11){_calMonth=0;_calYear++;}
+  if(_calMonth<0){_calMonth=11;_calYear--;}
+  renderCalendar();
+}
+
+function renderCalendar(){
+  document.getElementById("calMonth").textContent=MONTHS[_calMonth]+" "+_calYear;
+
+  var today=new Date();today.setHours(0,0,0,0);
+  var maxDate=new Date(today);
+  maxDate.setDate(maxDate.getDate()+(_availability.maxAdvanceDays||30));
+
+  var first=new Date(_calYear,_calMonth,1);
+  var startDow=first.getDay();
+  var daysInMonth=new Date(_calYear,_calMonth+1,0).getDate();
+
+  var html="";
+  DN.forEach(function(d){html+='<div class="cal-hdr">'+d+'</div>';});
+
+  for(var i=0;i<startDow;i++)html+='<div class="cal-day disabled"></div>';
+
+  for(var d=1;d<=daysInMonth;d++){
+    var dt=new Date(_calYear,_calMonth,d);
+    var iso=dt.toISOString().split("T")[0];
+    var isPast=dt<today;
+    var isBeyond=dt>maxDate;
+    var dow=dt.getDay();
+    var isAvailDay=_availability.days?_availability.days[dow]:dow>=1&&dow<=6;
+    var isBlocked=(_availability.blockedDates||[]).indexOf(iso)>=0;
+    var available=!isPast&&!isBeyond&&isAvailDay&&!isBlocked;
+    var hasSlots=available&&getSlotsForDate(iso).available>0;
+
+    var cls="cal-day";
+    if(dt.toDateString()===today.toDateString())cls+=" today";
+    if(_selectedDate===iso)cls+=" selected";
+    if(!available)cls+=" disabled";
+    else if(hasSlots)cls+=" has-slots";
+    else cls+=" no-slots disabled";
+
+    html+='<div class="'+cls+'" onclick="selectDate(\''+iso+'\')">'+d+'</div>';
+  }
+
+  /* Fill remaining cells */
+  var totalCells=startDow+daysInMonth;
+  var remaining=totalCells%7===0?0:7-(totalCells%7);
+  for(var r=0;r<remaining;r++)html+='<div class="cal-day disabled"></div>';
+
+  document.getElementById("calGrid").innerHTML=html;
+
+  /* Render time slots if date selected */
+  if(_selectedDate)renderTimeSlots(_selectedDate);
+}
+
+function getSlotsForDate(dateIso){
+  var startH=_availability.startHour||6;
+  var endH=_availability.endHour||20;
+  var slotMin=_availability.slotMinutes||60;
+  var booked=_bookedSlots.filter(function(s){return s.date===dateIso;});
+  var total=0,avail=0;
+  for(var h=startH;h<endH;h++){
+    for(var m=0;m<60;m+=slotMin){
+      if(h===startH&&m===0||h+(m+slotMin)/60<=endH){
+        total++;
+        var timeStr=pad2(h)+":"+pad2(m);
+        var isBooked=booked.some(function(s){return s.time===timeStr;});
+        if(!isBooked)avail++;
+      }
+    }
+  }
+  return{total:total,available:avail};
+}
+
+function selectDate(iso){
+  _selectedDate=iso;
+  _selectedTime=null;
+  updateCalNextBtn();
+  renderCalendar();
+}
+
+function renderTimeSlots(dateIso){
+  var container=document.getElementById("slotsContainer");
+  var grid=document.getElementById("slotsGrid");
+  var noSlots=document.getElementById("noSlots");
+  container.style.display="block";
+
+  var dt=new Date(dateIso+"T12:00:00");
+  var dayName=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][dt.getDay()];
+  document.getElementById("slotsDate").textContent=dayName+", "+MONTHS_SHORT[dt.getMonth()]+" "+dt.getDate();
+
+  var startH=_availability.startHour||6;
+  var endH=_availability.endHour||20;
+  var slotMin=_availability.slotMinutes||60;
+  var booked=_bookedSlots.filter(function(s){return s.date===dateIso;});
+
+  var morning=[],afternoon=[],evening=[];
+
+  for(var h=startH;h<endH;h++){
+    for(var m=0;m<60;m+=slotMin){
+      if(h+(m+slotMin)/60>endH)continue;
+      var timeStr=pad2(h)+":"+pad2(m);
+      var isBooked=booked.some(function(s){return s.time===timeStr;});
+      var slot={time:timeStr,display:fmtTime(timeStr),booked:isBooked};
+      if(h<12)morning.push(slot);
+      else if(h<17)afternoon.push(slot);
+      else evening.push(slot);
+    }
+  }
+
+  var html="";
+  if(morning.length)html+=renderSlotGroup("Morning",morning);
+  if(afternoon.length)html+=renderSlotGroup("Afternoon",afternoon);
+  if(evening.length)html+=renderSlotGroup("Evening",evening);
+
+  if(!morning.length&&!afternoon.length&&!evening.length){
+    grid.innerHTML="";
+    noSlots.style.display="block";
+  }else{
+    noSlots.style.display="none";
+    grid.innerHTML=html;
+  }
+}
+
+function renderSlotGroup(label,slots){
+  var html='<div class="slot-group-title">'+label+'</div><div class="time-slots">';
+  slots.forEach(function(s){
+    var cls="time-slot";
+    if(s.booked)cls+=" booked";
+    if(_selectedTime===s.time)cls+=" selected";
+    html+='<div class="'+cls+'" onclick="selectTime(\''+s.time+'\')">'+s.display+'</div>';
+  });
+  html+='</div>';
+  return html;
+}
+
+function selectTime(t){
+  _selectedTime=t;
+  updateCalNextBtn();
+  renderTimeSlots(_selectedDate);
+}
+
+function updateCalNextBtn(){
+  var btn=document.getElementById("calNextBtn");
+  if(_selectedDate&&_selectedTime){
+    btn.disabled=false;
+    btn.textContent="CONTINUE";
+  }else{
+    btn.disabled=true;
+    btn.textContent="SELECT A TIME TO CONTINUE";
+  }
+}
+
+/* ── SESSION TYPE ── */
+function renderTypes(){
+  var html="";
+  SESSION_TYPES.forEach(function(t){
+    var cls="type-chip"+(_selectedType===t.id?" selected":"");
+    html+='<div class="'+cls+'" onclick="selectType(\''+t.id+'\')">'
+      +'<div class="type-icon">'+t.icon+'</div>'
+      +'<div class="type-name">'+t.name+'</div></div>';
+  });
+  document.getElementById("typeGrid").innerHTML=html;
+  document.getElementById("notesWrap").style.display=_selectedType?"block":"none";
+  updateTypeBtn();
+}
+
+function selectType(id){
+  _selectedType=id;
+  renderTypes();
+}
+
+function updateTypeBtn(){
+  var btn=document.getElementById("typeNextBtn");
+  btn.disabled=!_selectedType;
+}
+
+/* ── CONFIRM ── */
+function renderConfirm(){
+  _notes=(document.getElementById("bookingNotes")||{}).value||"";
+  var dt=new Date(_selectedDate+"T12:00:00");
+  var dayName=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][dt.getDay()];
+  var typeName=SESSION_TYPES.find(function(t){return t.id===_selectedType;})||{name:"Session"};
+
+  var html='<div class="confirm-row"><div class="confirm-label">Name</div><div class="confirm-value">'+esc(_name)+'</div></div>'
+    +'<div class="confirm-row"><div class="confirm-label">Phone</div><div class="confirm-value">'+formatPhoneDisplay(_phone)+'</div></div>'
+    +'<div class="confirm-row"><div class="confirm-label">Date</div><div class="confirm-value">'+dayName+', '+MONTHS_SHORT[dt.getMonth()]+' '+dt.getDate()+', '+dt.getFullYear()+'</div></div>'
+    +'<div class="confirm-row"><div class="confirm-label">Time</div><div class="confirm-value">'+fmtTime(_selectedTime)+'</div></div>'
+    +'<div class="confirm-row"><div class="confirm-label">Session</div><div class="confirm-value">'+esc(typeName.name)+'</div></div>';
+  if(_notes)html+='<div class="confirm-row"><div class="confirm-label">Notes</div><div class="confirm-value" style="font-size:12px;color:var(--ow)">'+esc(_notes)+'</div></div>';
+
+  document.getElementById("confirmCard").innerHTML=html;
+}
+
+/* ── BOOK ── */
+function confirmBooking(){
+  var btn=document.getElementById("bookBtn");
+  btn.disabled=true;
+  btn.innerHTML='BOOKING <span class="loading-dots"><span></span><span></span><span></span></span>';
+
+  var sb=getSupabase();
+  if(!sb){toast("Connection error");btn.disabled=false;btn.textContent="BOOK SESSION";return;}
+
+  var typeName=(SESSION_TYPES.find(function(t){return t.id===_selectedType;})||{name:"Training"}).name;
+  var id="bk_"+Date.now()+"_"+Math.random().toString(36).substring(2,8);
+
+  /* Create schedule entry (same format as main app) */
+  var entry={
+    id:id,
+    clientId:"",
+    clientName:_name,
+    clientPhone:_phone,
+    date:_selectedDate,
+    time:_selectedTime,
+    type:typeName,
+    rate:"",
+    status:"pending",
+    notes:_notes,
+    source:"client_portal",
+    created_at:new Date().toISOString()
+  };
+
+  /* Also create a booking record for the portal */
+  var booking={
+    id:id,
+    phone:_phone,
+    name:_name,
+    date:_selectedDate,
+    time:_selectedTime,
+    type:typeName,
+    notes:_notes,
+    status:"confirmed",
+    created_at:new Date().toISOString()
+  };
+
+  /* Write to schedule table (syncs to Mike's app) */
+  var p1=sb.from("schedule").upsert({id:id,data:entry,updated_at:new Date().toISOString()},{onConflict:"id"});
+
+  /* Write to bookings table (portal tracking) */
+  var p2=sb.from("bookings").upsert({id:id,data:booking,updated_at:new Date().toISOString()},{onConflict:"id"});
+
+  /* Send SMS confirmation via edge function */
+  var p3=sb.functions.invoke("confirm-booking",{body:{
+    phone:_phone,
+    name:_name,
+    date:_selectedDate,
+    time:fmtTime(_selectedTime),
+    type:typeName
+  }}).catch(function(){/* SMS is best-effort */});
+
+  Promise.all([p1,p2,p3]).then(function(results){
+    if(results[0].error){
+      toast("Booking failed — please try again");
+      btn.disabled=false;btn.textContent="BOOK SESSION";
+      return;
+    }
+    /* Add to local booked slots so calendar updates */
+    _bookedSlots.push(entry);
+
+    var dt=new Date(_selectedDate+"T12:00:00");
+    var dayName=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][dt.getDay()];
+    document.getElementById("successMsg").innerHTML=
+      '<strong>'+esc(typeName)+'</strong><br>'
+      +dayName+', '+MONTHS_SHORT[dt.getMonth()]+' '+dt.getDate()+' at '+fmtTime(_selectedTime)
+      +'<br><br><span style="font-size:11px;color:var(--dm)">Confirmation sent to '+formatPhoneDisplay(_phone)+'</span>';
+    goStep(5);
+  }).catch(function(){
+    toast("Network error — please try again");
+    btn.disabled=false;btn.textContent="BOOK SESSION";
+  });
+}
+
+function bookAnother(){
+  _selectedDate=null;
+  _selectedTime=null;
+  _selectedType=null;
+  _notes="";
+  loadBookedSlots();
+  goStep(2);
+}
+
+/* ── UTILITIES ── */
+function pad2(n){return n<10?"0"+n:""+n;}
+
+function fmtTime(t){
+  if(!t)return"";
+  var parts=t.split(":");
+  var h=parseInt(parts[0]),m=parts[1];
+  var ap=h>=12?"PM":"AM";
+  var h12=h===0?12:h>12?h-12:h;
+  return h12+":"+m+" "+ap;
+}
+
+function formatPhoneDisplay(p){
+  var d=p.replace(/\D/g,"");
+  if(d.length===11&&d[0]==="1")d=d.substring(1);
+  if(d.length===10)return"("+d.substring(0,3)+") "+d.substring(3,6)+"-"+d.substring(6);
+  return p;
+}
+
+function esc(s){
+  if(!s)return"";
+  var d=document.createElement("div");
+  d.textContent=s;
+  return d.innerHTML;
+}
+
+function toast(msg){
+  var existing=document.querySelector(".toast");
+  if(existing)existing.remove();
+  var t=document.createElement("div");
+  t.className="toast";
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(function(){t.remove();},3000);
+}
+
+function shake(id){
+  var el=document.getElementById(id);
+  if(!el)return;
+  el.classList.add("shake");
+  setTimeout(function(){el.classList.remove("shake");},400);
+}
+
+/* Shake animation */
+var shakeStyle=document.createElement("style");
+shakeStyle.textContent="@keyframes shake{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-4px)}20%,40%,60%,80%{transform:translateX(4px)}}.shake{animation:shake .4s ease}";
+document.head.appendChild(shakeStyle);
+</script>
+</body>
+</html>
